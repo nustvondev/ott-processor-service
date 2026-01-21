@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_notification:/var/lib/postgresql/notification/data
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "16000:8080"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data_notification:

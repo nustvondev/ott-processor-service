@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+}
+
+
+application {
+    mainClass = 'com.onmicrosoft.ott.processor.api.OttProcessorServiceApplication'
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':infra')
+}
+
+

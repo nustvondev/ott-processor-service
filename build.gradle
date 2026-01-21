@@ -1,0 +1,121 @@
+plugins {
+	id 'java'
+	id 'jacoco'
+	id "com.diffplug.spotless" version "7.0.2"
+	id 'org.springframework.boot' version '3.4.2'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.onmicrosoft.ott.processor'
+version = '1.0-SNAPSHOT'
+description = 'Ott processor service'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+compileJava {
+	sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+configurations {
+    configureEach {
+    }
+}
+
+bootJar {
+    mainClass = 'NONE'
+}
+
+
+allprojects {
+    group = 'com.onmicrosoft'
+    version = '1.0.0-SNAPSHOT'
+
+    ext {
+        set('snakeyaml.version', '2.0')
+        set('springCloudVersion', "2024.0.0")
+    }
+
+    allprojects {
+        afterEvaluate {
+            def spotless = tasks.findByName('spotlessApply')
+            if (spotless) {
+                tasks.withType(JavaCompile) {
+                    finalizedBy(spotless)
+                }
+            }
+        }
+    }
+}
+
+
+subprojects{
+	apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'com.diffplug.spotless'
+
+	repositories {
+		mavenCentral()
+		maven { url = 'https://repo.spring.io/snapshot' }
+	}
+
+	bootJar { mainClass = 'NONE' }
+
+
+	dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+	dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly libVersion.lombok
+	annotationProcessor libVersion.lombok
+	implementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        implementation 'org.mapstruct:mapstruct:1.6.3'
+        annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+        annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+// https://mvnrepository.com/artifact/commons-io/commons-io
+        implementation("commons-io:commons-io:2.21.0")
+        implementation 'com.google.firebase:firebase-admin:9.7.0'
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        runtimeOnly libVersion.postgresql
+
+    }
+	spotless {
+        java {
+            importOrder()
+            removeUnusedImports()
+            formatAnnotations()
+            googleJavaFormat('1.19.1')
+            leadingSpacesToTabs(2)
+            leadingTabsToSpaces(4)
+            endWithNewline()
+        }
+    }
+	configurations {
+        configureEach {
+            exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+            exclude group: 'ch.qos.logback', module: 'logback-classic'
+            exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
+        }
+    }
+
+}
+
+
+
+afterEvaluate {
+    tasks.getByName('spotlessCheck').dependsOn(tasks.getByName('spotlessApply'))
+}

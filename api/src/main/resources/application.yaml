@@ -1,0 +1,31 @@
+server:
+  port: ${APP_PORT:8080}
+  servlet:
+    context-path: /api/notification-service
+
+spring:
+  application:
+    name: ott-processor-service
+  profiles:
+    active: ${SPRING_ACTIVE_PROFILES:prod}
+  datasource-readonly:
+    url: jdbc:postgresql://${POSTGRES_RO_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:notification}?currentSchema=${POSTGRES_SCHEMA:notification}
+    username: ${POSTGRES_USER:admin}
+    password: ${POSTGRES_PASSWORD:admin}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:notification}?currentSchema=${POSTGRES_SCHEMA:notification}
+    username: ${POSTGRES_USER:admin}
+    password: ${POSTGRES_PASSWORD:admin}
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          boot: DEBUG
+
+
+
+

@@ -1,0 +1,13 @@
+rootProject.name = 'ott-processor-service'
+include 'api'
+include 'infra'
+include 'core'
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libVersion {
+            from(files("./libs.versions.toml"))
+        }
+    }
+}
+
